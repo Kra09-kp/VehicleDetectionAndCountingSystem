@@ -20,8 +20,8 @@ cv2.setMouseCallback('RGB', RGB)
 cap=cv2.VideoCapture('vidyolov8.mp4')
 # now i want to save my detections in a video
 # Define the codec and create VideoWriter object
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-output_video = cv2.VideoWriter('output3.avi', fourcc, 20.0, (1020, 500))
+#fourcc = cv2.VideoWriter_fourcc(*'XVID')
+#output_video = cv2.VideoWriter('output3.avi', fourcc, 20.0, (1020, 500))
 
 
 my_file = open("coco.txt", "r")
@@ -34,10 +34,10 @@ cy2 = 229
 cx1 = 0
 cx2 = 0
 offset = 6  # for the line thickness (can customize according to the video)
-#area = [(245,233),(250,256),(583,220),(552,207)] # for other videos we just need to update the area coordinates
+
 CounterU = set()
 CounterD = set()
-#Counter = set()
+
 vh_down = {} # to store the vehicles which are going down
 vh_up = {} # to store the vehicles which are going up
 tracker = Tracker()
@@ -62,12 +62,7 @@ while True:
         continue
     pc = pd.DataFrame(c).astype("float")
     pconf = pd.DataFrame(conf).astype("float")
-    # now add pc and pconf to a px dataframe
-    #print(pc)
-    #print(pconf)
-
-    
-        
+    # now add pc and pconf to a px dataframe    
     px = pd.DataFrame(a).astype("float")
     px = pd.concat([px, pconf, pc], axis=1)
 
@@ -106,11 +101,10 @@ while True:
         cy = (y3 + y4) // 2
         print(cy,id)
         # to check if the center of the vehicle is in the area or not
-        #result = cv2.pointPolygonTest(np.array(area,np.int32), (cx, cy), False) 
         cv2.circle(frame, (cx, cy), 4, (0, 255, 0), -1)
-                # to draw a rectangle on our frame
+        # to draw a rectangle on our frame
         cv2.rectangle(frame, (x3, y3), (x4, y4), (0,0,255), 2)
-                # to put the class name on the rectangle in our frame
+        # to put the class name on the rectangle in our frame
         cv2.putText(frame, str(c),(x3+2, y3+2), cv2.FONT_HERSHEY_SIMPLEX, 0.7,(255,0,0), 2)
         
         #for going down side
@@ -119,14 +113,7 @@ while True:
         if id in vh_down:
             if cy2<(cy+offset) and cy2>(cy-offset):
                 CounterD.add(id)
-        #if result >=0:
-        '''cv2.circle(frame, (cx, cy), 4, (0, 255, 0), -1)
-                # to draw a rectangle on our frame
-        cv2.rectangle(frame, (x3, y3), (x4, y4), (0,0,255), 2)
-                # to put the class name on the rectangle in our frame
-        cv2.putText(frame, str(c)+' '+str(id), (x3, y3), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255,0,0), 2)
-        #area_c.add(id)'''
-                
+        
         #Counter.add(id)
         
         # for going up side
@@ -136,35 +123,28 @@ while True:
             if cy1<(cy+offset) and cy1>(cy-offset):
                 CounterU.add(id)
                 
-                ''' cv2.circle(frame, (cx, cy), 4, (0, 255, 0), -1)
-                # to draw a rectangle on our frame
-                cv2.rectangle(frame, (x3, y3), (x4, y4), (0,0,255), 2)
-                # to put the class name on the rectangle in our frame
-                cv2.putText(frame, str(c), (x3, y3), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255,0,0), 2)'''
+               
                 
-        # to draw a polyline for detection area
-        #cv2.polylines(frame, [np.array(area,np.int32)], True, (0, 255, 0), 2)
+       
     #cv2.putText(frame, "Total Vehicles: " + str(len(Counter)), (10, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255,255,255), 1)
     cv2.putText(frame, "Going Down: " + str(len(CounterD)), (850, 60), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0,255,255), 1)
     cv2.putText(frame, "Going Up: " + str(len(CounterU)), (850, 80), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0,255,255), 1)
     # to draw a line
-    
     cv2.line(frame, (225,cy1), (556,cy1), (255,255,255),1)
     # to put text on the line
     cv2.putText(frame, "Lane 1", (220,cy1-10), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255,255,255), 1)
-    
+    # to draw a second line and put text on the line
     cv2.line(frame, (243,cy2), (590,cy2), (255,255,255),1)
-   
     cv2.putText(frame, "Lane 2", (239,cy2-10), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255,255,255), 1)
     #print(Counter)
     print(CounterD)
     print(CounterU)
-    output_video.write(frame)
+    #output_video.write(frame)
 
     cv2.imshow("RGB", frame)
     if cv2.waitKey(1)&0xFF==27:
         break
 
 cap.release()
-output_video.release()
+#output_video.release()
 cv2.destroyAllWindows()
